@@ -155,7 +155,9 @@ Word send_local_response(Word response_code, Word response_code_details_ptr,
   auto additional_headers = PairsUtil::toPairs(additional_response_header_pairs.value());
   context->sendLocalResponse(response_code, body.value(), std::move(additional_headers),
                              grpc_status, details.value());
-  context->wasm()->stopNextIteration(true);
+  if (response_code >= 200 || response_code < 100) {
+    context->wasm()->stopNextIteration(true);
+  }
   return WasmResult::Ok;
 }
 
